@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/primary"
+    android:layout_height="170dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:shapeAppearanceOverlay="@style/curved"
+        android:src="@drawable/img_song_cover"
+        android:elevation="@dimen/_8sdp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="@string/header"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/header_title"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+</LinearLayout>
