@@ -17,20 +17,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sangeet.adapter.MusicAdapter
-import com.example.sangeet.adapter.PlaylistAdapter
-import com.example.sangeet.common.Constants
 import com.example.sangeet.common.exit
 import com.example.sangeet.common.showToast
 import com.example.sangeet.databinding.ActivityMainBinding
 import com.example.sangeet.model.Music
-import com.example.sangeet.ui.activities.FavoriteActivity
 import com.example.sangeet.ui.activities.PlayerActivity
-import com.example.sangeet.ui.activities.PlaylistActivity
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import java.io.File
+import kotlin.system.exitProcess
 
-
+//New Line Added!
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -39,8 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var MusicListMA: ArrayList<Music>
-        lateinit var MusicListMASearch: ArrayList<Music>
-        var search = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,14 +42,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initView()
         runTimePermission()
-        val editor = getSharedPreferences(Constants.FavPref, MODE_PRIVATE)
-        val jsonString = editor.getString(Constants.favKey, null)
-        val typeToken = object : TypeToken<ArrayList<Music>>() {}.type
-        if (jsonString != null) {
-            val data: ArrayList<Music> = GsonBuilder().create().fromJson(jsonString, typeToken)
-            FavoriteActivity.favoriteSong.addAll(data)
-        }
-
     }
 
     private fun runTimePermission() {
@@ -113,17 +98,8 @@ class MainActivity : AppCompatActivity() {
         }
         adapter = MusicAdapter(this, MusicListMA) {
             Intent(this, PlayerActivity::class.java).also { intent ->
-                if (MusicListMA[it].id == PlayerActivity.nowPlayingId) {
-                    intent.putExtra("index", PlayerActivity.songPosition)
-                    intent.putExtra("class", "NowPlayer")
-                } else {
-                    intent.putExtra("index", it)
-                    if (search) {
-                        intent.putExtra("class", "SearchAdapter")
-                    } else {
-                        intent.putExtra("class", "MusicAdapter")
-                    }
-                }
+                intent.putExtra("index", it)
+                intent.putExtra("class", "MusicAdapter")
                 startActivity(intent)
             }
         }
@@ -132,17 +108,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnShuffle.setOnClickListener {
             Intent(this, PlayerActivity::class.java).also { intent ->
                 intent.putExtra("class", "MainActivity")
-                startActivity(intent)
-            }
-        }
-        binding.btnFavourite.setOnClickListener {
-            Intent(this, FavoriteActivity::class.java).also { intent ->
-                startActivity(intent)
-            }
-        }
-
-        binding.btnPlayList.setOnClickListener {
-            Intent(this, PlaylistActivity::class.java).also { intent ->
                 startActivity(intent)
             }
         }
@@ -245,32 +210,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_view, menu)
         val searchView = menu?.findItem(R.id.etSearch)?.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean = true
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                MusicListMASearch = ArrayList()
-                val newList = MusicListMA.filter {
-                    it.toString().lowercase().contains(newText.toString().lowercase())
-                }
-                MusicListMASearch.addAll(newList)
-                adapter.updateList(MusicListMASearch)
-                search = true
+                val newList = MusicListMA.filter { it.toString().lowercase().contains(newText.toString().lowercase()) }
+                adapter.updateList(newList)
+
                 return true
             }
         })
         return super.onCreateOptionsMenu(menu)
     }
-
-    override fun onResume() {
-        super.onResume()
-        val editor = getSharedPreferences(Constants.FavPref, MODE_PRIVATE).edit()
-        val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteSong)
-        editor.putString(Constants.favKey, jsonString)
-        editor.apply()
-    }
-
-
-
 
 }
