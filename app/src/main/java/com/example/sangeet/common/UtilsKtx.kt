@@ -8,14 +8,16 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.sangeet.R
-import com.example.sangeet.services.MusicService
+import com.example.sangeet.ui.activities.FavoriteActivity
 import com.example.sangeet.ui.activities.PlayerActivity
+import com.example.sangeet.ui.fragment.NowPlayingFragment
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -89,7 +91,9 @@ fun playSong() {
     PlayerActivity.isPlaying = true
     PlayerActivity.binding.btnPause.setIconResource(R.drawable.pause)
     PlayerActivity.musicService?.showNotification(R.drawable.pause)
+    NowPlayingFragment.binding.btnPlay.setIconResource(R.drawable.pause)
     PlayerActivity.musicService?.mediaPlayer?.start()
+
 }
 
 /** Pause Song */
@@ -97,6 +101,7 @@ fun pauseSong() {
     PlayerActivity.isPlaying = false
     PlayerActivity.binding.btnPause.setIconResource(R.drawable.play)
     PlayerActivity.musicService?.showNotification(R.drawable.play)
+    NowPlayingFragment.binding.btnPlay.setIconResource(R.drawable.play)
     PlayerActivity.musicService?.mediaPlayer?.pause()
 }
 
@@ -165,17 +170,22 @@ fun imageArt(path: String): ByteArray? {
 }
 
 /** Next and Previous Song For Notification */
-fun preNextSong(increment: Boolean, context: Context) {
+fun preNextSong(increment: Boolean, context: Context, imgId: ImageView, tvId: TextView) {
     setSongPosition(increment)
     songList()
     Glide.with(context)
         .load(PlayerActivity.MusicListPA[PlayerActivity.songPosition].artUri)
         .apply(RequestOptions().placeholder(R.drawable.img_song_cover)).centerCrop()
-        .into(PlayerActivity.binding.imgSongCoverPA)
-    PlayerActivity.binding.tvSongName.text =
+        .into(imgId)
+    tvId.text =
         PlayerActivity.MusicListPA[PlayerActivity.songPosition].title
     playSong()
-
+    PlayerActivity.fIndex = favoriteChecker(PlayerActivity.MusicListPA[PlayerActivity.songPosition].id)
+    if (PlayerActivity.isFavorite) {
+        PlayerActivity.binding.navbar.imgFavorite.setImageResource(R.drawable.favorite)
+    } else {
+        PlayerActivity.binding.navbar.imgFavorite.setImageResource(R.drawable.favorite_empty)
+    }
 }
 
 /** Get Song List */
@@ -197,6 +207,33 @@ fun songList() {
     PlayerActivity.musicService?.mediaPlayer?.duration?.let {
         PlayerActivity.binding.btnSeekbar.max = it
     }
-
-
+    PlayerActivity.nowPlayingId = PlayerActivity.MusicListPA[PlayerActivity.songPosition].id
 }
+
+fun setLayout(context: Context) {
+    Glide.with(context)
+        .load(PlayerActivity.MusicListPA[PlayerActivity.songPosition].artUri)
+        .apply(RequestOptions().placeholder(R.drawable.img_song_cover)).centerCrop()
+        .into(NowPlayingFragment.binding.imgSongCover)
+    NowPlayingFragment.binding.tvSongTitle.text =
+        PlayerActivity.MusicListPA[PlayerActivity.songPosition].title
+}
+
+/** Favorite Song checker */
+fun favoriteChecker(id: String): Int {
+    PlayerActivity.isFavorite = false
+    FavoriteActivity.favoriteSong.forEachIndexed { index, music ->
+        if (id == music.id) {
+            PlayerActivity.isFavorite = true
+            return index
+        }
+    }
+    return -1
+}
+
+
+/** Favorite Song List  */
+fun saveList() {
+//    val editor
+}
+

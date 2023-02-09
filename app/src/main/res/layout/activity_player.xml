@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.activities.PlayerActivity">
+    <include layout="@layout/navbar" android:id="@+id/navbar"/>
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgSongCoverPA"
@@ -17,7 +18,7 @@
         app:strokeWidth="@dimen/_2sdp"
         android:elevation="@dimen/_5sdp"
         android:padding="@dimen/_5sdp"
-        android:layout_marginTop="@dimen/_90sdp"
+        android:layout_marginTop="@dimen/_50sdp"
         android:src="@drawable/img_song_cover" />
 
     <TextView

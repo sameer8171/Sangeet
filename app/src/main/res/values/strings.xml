@@ -16,5 +16,8 @@
     <string name="timer">00:00</string>
     <string name="loading">Loading..</string>
     <string name="search">Search</string>
+    <string name="_15_minutes">15 Minutes</string>
+    <string name="_30_minutes">30 Minutes</string>
+    <string name="_60_minutes">60 Minutes</string>
 
 </resources>

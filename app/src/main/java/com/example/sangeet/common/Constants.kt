@@ -6,4 +6,6 @@ object Constants {
     const val NEXT = "next"
     const val PREVIOUS = "previous"
     const val EXIT = "exit"
+    const val FavPref = "Favorite"
+    const val favKey = "FavoriteSong"
 }
